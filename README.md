@@ -13,6 +13,40 @@ Features:
 - /restart restart the bot process (for upgrades, requires systemd or similar process manager)
 
 
+## Run via Docker Compose (Recommended)
+
+You can easily run the bot using Docker and GitHub Container Registry (GHCR). Create a `docker-compose.yml` file anywhere on your machine with the following content:
+
+```yaml
+services:
+  readeckbot:
+    image: ghcr.io/mgaitan/readeckbot:latest # Change to your repo name if you fork it or any version tag you want to use.
+    container_name: readeckbot
+    restart: unless-stopped
+    env_file: .env
+    working_dir: /app/data
+    volumes:
+      - ./data:/app/data
+```
+
+Then, create a `.env` file in the same directory:
+
+```env
+TELEGRAM_BOT_TOKEN=<your_bot_token>
+READECK_BASE_URL=http://127.0.0.1:8000
+READECK_CONFIG=./config.yaml      # optional, can be left out
+READECK_DATA=./data               # optional, use if you want to customize where data is stored
+
+LLM_KEY=<your_llm_key>           # optional, use if you want to enable LLM features
+LLM_MODEL=<model_name>           # optional, by default it's gemini-2.0-flash-lite
+LLM_SUMMARY_MAX_LENGTH=<int>     # optional , use if you want to customize the max length of LLM summary
+```
+
+Start the bot:
+```bash
+docker compose up -d
+```
+
 ## Setup a development environment
 
 **1. Clone the bot repository**
@@ -43,18 +77,7 @@ This will start the Readeck backend on `http://127.0.0.1:8000` by default.
 
 **4. Set up your environment variables**
 
-Create a file named `.env` in the project root. This file stores config variables used by the bot.
-
-```env
-TELEGRAM_BOT_TOKEN=<your_bot_token>
-READECK_BASE_URL=http://127.0.0.1:8000
-READECK_CONFIG=./config.yaml      # optional, can be left out
-READECK_DATA=./data               # optional, use if you want to customize where data is stored
-
-LLM_KEY=<your_llm_key>           # optional, use if you want to enable LLM features
-LLM_MODEL=<model_name>           # optional, by default it's gemini-2.0-flash-lite
-LLM_SUMMARY_MAX_LENGTH=<int>     # optional , use if you want to customize the max length of LLM summary
-```
+Create a `.env` file in the project root (same format as the [Docker Compose section](#run-via-docker-compose-recommended)).
 
 > 📄 What’s a `.env` file? It's a simple file format for storing key=value pairs, that are loaded as [environment variables](https://en.wikipedia.org/wiki/Environment_variable) by apps.
 
